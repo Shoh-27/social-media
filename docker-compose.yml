@@ -1,0 +1,186 @@
+version: '3.8'
+
+services:
+  # Laravel Application Container
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      # Mount source code for hot reloading
+      - ./src:/var/www
+      # Supervisor configuration
+      - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+    networks:
+      - laravel
+    depends_on:
+      - db
+      - redis
+      - meilisearch
+    environment:
+      # Pass environment variables
+      - APP_ENV=${APP_ENV:-local}
+      - CONTAINER_ROLE=app
+
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: laravel_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      # Mount source code (read-only for security)
+      - ./src:/var/www:ro
+      # Custom Nginx configuration
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - laravel
+    depends_on:
+      - app
+
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: laravel_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      # Database credentials
+      POSTGRES_DB: ${DB_DATABASE:-laravel}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - laravel
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache & Queue
+  redis:
+    image: redis:7-alpine
+    container_name: laravel_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      # Persist Redis data
+      - redis_data:/data
+    networks:
+      - laravel
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Meilisearch Full-Text Search
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    container_name: laravel_meilisearch
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      # Meilisearch configuration
+      MEILI_ENV: ${MEILI_ENV:-development}
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY:-masterKey}
+    volumes:
+      # Persist search indexes
+      - meilisearch_data:/meili_data
+    networks:
+      - laravel
+
+  # Mailpit Email Testing (Local Development)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: laravel_mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web UI
+    networks:
+      - laravel
+
+  # Laravel Horizon (Queue Worker Dashboard)
+  horizon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_horizon
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+    depends_on:
+      - db
+      - redis
+    environment:
+      - CONTAINER_ROLE=horizon
+    command: php artisan horizon
+
+  # Laravel Queue Worker (Alternative to Horizon)
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+    depends_on:
+      - db
+      - redis
+    environment:
+      - CONTAINER_ROLE=queue
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+
+  # Laravel Scheduler (Cron Jobs)
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+    depends_on:
+      - db
+      - redis
+    environment:
+      - CONTAINER_ROLE=scheduler
+    command: >
+      sh -c "while true; do
+        php artisan schedule:run --verbose --no-interaction &
+        sleep 60
+      done"
+
+networks:
+  laravel:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  meilisearch_data:
+    driver: local
