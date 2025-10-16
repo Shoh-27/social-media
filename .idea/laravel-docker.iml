@@ -124,6 +124,10 @@
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/webmozart/assert" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/laravel/breeze" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/laravel/scout" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/meilisearch/meilisearch-php" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/php-http/discovery" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/symfony/polyfill-php81" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
