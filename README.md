@@ -449,9 +449,9 @@ docker-compose exec redis redis-cli ping
 ## 👨‍💻 Muallif
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-- LinkedIn: [Your Name](https://linkedin.com/in/yourprofile)
+- GitHub: [@Shoh-27](https://github.com/Shoh-27)
+- Email: shohruxn405@gmail.com
+
 
 ---
 
@@ -471,14 +471,12 @@ docker-compose exec redis redis-cli ping
 
 Agar loyiha foydali bo'lsa, ⭐ star bering!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=username/laravel-social-media&type=Date)](https://star-history.com/#username/laravel-social-media&Date)
-
 ---
 
 <div align="center">
 
-**Made with ❤️ by [Your Name](https://github.com/yourusername)**
+**Made with ❤️ by [Shohrux Nizomov](https://github.com/Shoh-27)**
 
-[Report Bug](https://github.com/username/laravel-social-media/issues) · [Request Feature](https://github.com/username/laravel-social-media/issues)
+[Request Feature](https://github.com/Shoh-27/social-media/issues)
 
 </div>
