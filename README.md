@@ -4,7 +4,6 @@
 [![PHP](https://img.shields.io/badge/PHP-8.3-blue.svg)](https://php.net)
 [![Docker](https://img.shields.io/badge/Docker-Ready-brightgreen.svg)](https://docker.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://postgresql.org)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Modern ijtimoiy tarmoq platformasi Laravel 11 asosida qurilgan, to'liq Docker muhitida sozlangan va production deployment uchun tayyor.
 
@@ -65,8 +64,8 @@ Modern ijtimoiy tarmoq platformasi Laravel 11 asosida qurilgan, to'liq Docker mu
 ### 1. Repositoriyani Clone Qilish
 
 ```bash
-git clone https://github.com/username/laravel-social-media.git
-cd laravel-social-media
+git clone https://github.com/shoh-27/social-media.git
+cd social-media
 ```
 
 ### 2. Environment Sozlash
@@ -328,8 +327,8 @@ sudo systemctl start docker
 
 ```bash
 # Git clone
-git clone https://github.com/username/laravel-social-media.git
-cd laravel-social-media
+git clone https://github.com/shoh-27/social-media.git
+cd social-media
 
 # Production .env sozlash
 cp .env.example .env
@@ -455,10 +454,6 @@ docker-compose exec redis redis-cli ping
 - LinkedIn: [Your Name](https://linkedin.com/in/yourprofile)
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
