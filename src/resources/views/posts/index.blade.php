@@ -20,7 +20,7 @@
                         <div class="mt-3 flex items-center justify-between">
                             <input type="file" name="image" accept="image/*" class="text-sm">
                             <button type="submit"
-                                    class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">
+                                    class="bg-blue-600 text-gray-600 px-6 py-2 rounded-full hover:bg-blue-700">
                                 Post
                             </button>
                         </div>
