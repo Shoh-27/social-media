@@ -26,20 +26,39 @@ class PostController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string|max:1000',
+            'type' => 'required|in:text,image,video,link',
             'image' => 'nullable|image|max:5120',
+            'video' => 'nullable|mimes:mp4,mov,avi|max:51200',
+            'link_url' => 'nullable|url',
         ]);
 
         $validated['user_id'] = auth()->id();
 
+        // Handle image upload
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('posts', 'public');
+            $validated['image'] = $request->file('image')->store('posts/images', 'public');
         }
 
-        Post::create($validated);
+        // Handle video upload
+        if ($request->hasFile('video')) {
+            $validated['video'] = $request->file('video')->store('posts/videos', 'public');
+        }
+
+        // Fetch link preview if URL provided
+        if ($validated['type'] === 'link' && !empty($validated['link_url'])) {
+            $linkData = $this->fetchLinkPreview($validated['link_url']);
+            $validated = array_merge($validated, $linkData);
+        }
+
+        $post = Post::create($validated);
+
+        // Extract and attach hashtags
+        $post->attachHashtags();
 
         return redirect()->route('posts.index')
             ->with('success', 'Post created successfully!');
     }
+
 
     public function edit(Post $post)
     {
@@ -81,5 +100,32 @@ class PostController extends Controller
 
         return redirect()->route('posts.index')
             ->with('success', 'Post deleted successfully!');
+    }
+    private function fetchLinkPreview($url)
+    {
+        try {
+            $html = file_get_contents($url);
+
+            // Extract title
+            preg_match('/(.*?)<\/title>/is', $html, $title);
+
+            // Extract meta description
+            preg_match('/<meta\s+name=["\']description["\']\s+content=["\'](.*?)["\']/is', $html, $description);
+
+            // Extract og:image
+            preg_match('/<meta\s+property=["\']og:image["\']\s+content=["\'](.*?)["\']/is', $html, $image);
+
+            return [
+                'link_title' => $title[1] ?? '',
+                'link_description' => $description[1] ?? '',
+                'link_image' => $image[1] ?? '',
+            ];
+        } catch (\Exception $e) {
+            return [
+                'link_title' => $url,
+                'link_description' => '',
+                'link_image' => '',
+            ];
+        }
     }
 }

@@ -13,10 +13,43 @@ class Post extends Model
     protected $fillable = [
         'user_id',
         'content',
+        'type',
         'image',
+        'video',
+        'link_url',
+        'link_title',
+        'link_description',
+        'link_image',
         'likes_count',
         'comments_count',
     ];
+
+// Relationship
+    public function hashtags()
+    {
+        return $this->belongsToMany(Hashtag::class, 'post_hashtag');
+    }
+
+// Helper method
+    public function attachHashtags()
+    {
+        $tags = Hashtag::extractFromText($this->content);
+
+        foreach ($tags as $tagName) {
+            $hashtag = Hashtag::firstOrCreate(
+                ['name' => strtolower($tagName)],
+                ['posts_count' => 0]
+            );
+
+            $this->hashtags()->syncWithoutDetaching([$hashtag->id]);
+            $hashtag->increment('posts_count');
+        }
+    }
+
+    public function getVideoUrlAttribute()
+    {
+        return $this->video ? asset('storage/' . $this->video) : null;
+    }
 
     protected $casts = [
         'created_at' => 'datetime',

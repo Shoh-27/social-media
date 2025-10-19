@@ -18,7 +18,9 @@ class LikeController extends Controller
 
         $post->like($user);
 
-        // Create notification
+        // Postni yangilab olish
+        $post->refresh();
+
         if ($post->user_id !== $user->id) {
             Notification::create([
                 'user_id' => $post->user_id,
@@ -31,7 +33,7 @@ class LikeController extends Controller
         }
 
         return response()->json([
-            'likes_count' => $post->likes_count,
+            'likes_count' => $post->likes()->count(),
             'message' => 'Post liked'
         ]);
     }
@@ -41,9 +43,13 @@ class LikeController extends Controller
         $user = auth()->user();
         $post->unlike($user);
 
+        // Postni yangilab olish
+        $post->refresh();
+
         return response()->json([
-            'likes_count' => $post->likes_count,
+            'likes_count' => $post->likes()->count(),
             'message' => 'Post unliked'
         ]);
     }
+
 }

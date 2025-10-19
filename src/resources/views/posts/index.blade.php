@@ -144,17 +144,26 @@
                     @endforeach
 
                     <!-- Add Comment Form -->
-                    <form action="{{ route('comments.store', $post) }}" method="POST" class="mt-3 flex items-start space-x-3">
-                        @csrf
-                        <img src="{{ auth()->user()->avatar_url }}"
-                             alt="{{ auth()->user()->name }}"
-                             class="w-8 h-8 rounded-full">
-                        <input type="text"
-                               name="content"
-                               placeholder="Write a comment..."
-                               class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               required>
-                    </form>
+                        <!-- Add Comment Form -->
+                        <form action="{{ route('comments.store', $post) }}" method="POST" class="mt-3 flex items-start space-x-3">
+                            @csrf
+                            <img src="{{ auth()->user()->avatar_url }}"
+                                 alt="{{ auth()->user()->name }}"
+                                 class="w-8 h-8 rounded-full">
+
+                            <div class="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-2">
+                                <input type="text"
+                                       name="content"
+                                       placeholder="Write a comment..."
+                                       class="flex-1 bg-gray-100 border-0 focus:ring-0 focus:outline-none text-sm"
+                                       required>
+
+                                <button type="submit"
+                                        class="ml-2 bg-gray-500 text-white text-sm px-4 py-1.5 rounded-full hover:bg-blue-700 transition">
+                                    Send
+                                </button>
+                            </div>
+                        </form>
                 </div>
             </div>
         @endforeach
