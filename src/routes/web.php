@@ -8,6 +8,8 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\HashtagController;
+use App\Http\Controllers\UserPreferenceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -58,6 +60,13 @@ Route::middleware('auth')->group(function () {
 
     // Search
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
+
+    Route::get('/hashtag/{name}', [HashtagController::class, 'show'])->name('hashtags.show');
+    Route::get('/trending', [HashtagController::class, 'trending'])->name('hashtags.trending');
+
+    // User Preferences
+    Route::post('/preferences/theme', [UserPreferenceController::class, 'updateTheme'])->name('preferences.theme');
+    Route::get('/preferences', [UserPreferenceController::class, 'getPreferences'])->name('preferences.get');
 });
 
 
