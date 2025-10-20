@@ -3,24 +3,58 @@
 @section('content')
     <div class="max-w-2xl mx-auto px-4">
         <!-- Create Post Form -->
-        <div class="bg-white rounded-lg shadow p-4 mb-6">
-            <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
+        <div class="bg-gray-100 dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
+            <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" x-data="{ postType: 'text' }">
                 @csrf
+
                 <div class="flex items-start space-x-3">
                     <img src="{{ auth()->user()->avatar_url }}"
                          alt="{{ auth()->user()->name }}"
                          class="w-10 h-10 rounded-full">
 
                     <div class="flex-1">
-                    <textarea name="content"
-                              rows="3"
-                              class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="What's on your mind?"></textarea>
+                <textarea name="content"
+                          rows="3"
+                          class="w-full border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="What's on your mind? Use #hashtags"></textarea>
+
+                        <!-- Post Type Selector -->
+                        <div class="mt-3 flex items-center space-x-4">
+                            <select name="type"
+                                    x-model="postType"
+                                    class="border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-500">
+                                <option value="text">Text</option>
+                                <option value="image">Image</option>
+                                <option value="video">Video</option>
+                                <option value="link">Link</option>
+                            </select>
+                        </div>
+
+                        <!-- Image Upload -->
+                        <div x-show="postType === 'image'" class="mt-3">
+                            <label class="block text-sm font-medium mb-2 dark:text-gray-300">Upload Image</label>
+                            <input type="file" name="image" accept="image/*" class="text-sm dark:text-gray-300">
+                        </div>
+
+                        <!-- Video Upload -->
+                        <div x-show="postType === 'video'" class="mt-3">
+                            <label class="block text-sm font-medium mb-2 dark:text-gray-300">Upload Video</label>
+                            <input type="file" name="video" accept="video/*" class="text-sm dark:text-gray-300">
+                            <p class="text-xs text-gray-500 mt-1">Max 50MB</p>
+                        </div>
+
+                        <!-- Link Input -->
+                        <div x-show="postType === 'link'" class="mt-3">
+                            <label class="block text-sm font-medium mb-2 dark:text-gray-300">Paste URL</label>
+                            <input type="url"
+                                   name="link_url"
+                                   placeholder="https://example.com"
+                                   class="w-full border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-2">
+                        </div>
 
                         <div class="mt-3 flex items-center justify-between">
-                            <input type="file" name="image" accept="image/*" class="text-sm">
                             <button type="submit"
-                                    class="bg-blue-600 text-gray-600 px-6 py-2 rounded-full hover:bg-blue-700">
+                                    class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">
                                 Post
                             </button>
                         </div>
@@ -31,7 +65,7 @@
 
         <!-- Posts Feed -->
         @foreach($posts as $post)
-            <div class="bg-white rounded-lg shadow mb-4">
+            <div class="bg-gray-100 rounded-lg shadow mb-4">
                 <!-- Post Header -->
                 <div class="p-4 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
@@ -73,18 +107,57 @@
                     @endif
                 </div>
 
-                <!-- Post Content -->
+                <!-- Post Content with Hashtags -->
                 <div class="px-4 pb-3">
-                    <p class="text-gray-800 whitespace-pre-wrap">{{ $post->content }}</p>
+                    <p class="text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                        {!! preg_replace('/#(\w+)/', '<a href="/hashtag/$1" class="text-blue-600 hover:underline">#$1</a>', e($post->content)) !!}
+                    </p>
                 </div>
 
                 <!-- Post Image -->
-                @if($post->image)
+                @if($post->type === 'image' && $post->image)
                     <img src="{{ $post->image_url }}"
                          alt="Post image"
                          class="w-full">
                 @endif
 
+                <!-- Post Video -->
+                @if($post->type === 'video' && $post->video)
+                    <video controls class="w-full">
+                        <source src="{{ $post->video_url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                @endif
+
+                <!-- Link Preview -->
+                @if($post->type === 'link' && $post->link_url)
+                    <a href="{{ $post->link_url }}"
+                       target="_blank"
+                       class="block border dark:border-gray-600 rounded-lg overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-700">
+                        @if($post->link_image)
+                            <img src="{{ $post->link_image }}"
+                                 alt="{{ $post->link_title }}"
+                                 class="w-full h-48 object-cover">
+                        @endif
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ $post->link_title }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ Str::limit($post->link_description, 100) }}</p>
+                            <p class="text-xs text-gray-500 mt-2">{{ parse_url($post->link_url, PHP_URL_HOST) }}</p>
+                        </div>
+                    </a>
+                @endif
+
+                <!-- Hashtags -->
+                @if($post->hashtags->count() > 0)
+                    <div class="px-4 py-2 flex flex-wrap gap-2">
+                        @foreach($post->hashtags as $hashtag)
+                            <a href="{{ route('hashtags.show', $hashtag->name) }}"
+                               class="text-xs bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-blue-600 dark:text-blue-400 hover:bg-gray-200 dark:hover:bg-gray-600">
+                                #{{ $hashtag->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
                 <!-- Post Stats -->
                 <div class="px-4 py-2 border-t border-b flex items-center justify-between text-sm text-gray-600">
                     <span>{{ $post->likes_count }} likes</span>
