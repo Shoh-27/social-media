@@ -111,7 +111,25 @@ services:
       - "8025:8025"  # Web UI
     networks:
       - laravel
-
+  # Laravel Reverb WebSocket
+  reverb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_reverb
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - CONTAINER_ROLE=reverb
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080 --debug
   # Laravel Horizon (Queue Worker Dashboard)
   horizon:
     build:

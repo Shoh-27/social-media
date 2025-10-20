@@ -128,6 +128,20 @@
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/meilisearch/meilisearch-php" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/php-http/discovery" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/symfony/polyfill-php81" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/clue/redis-protocol" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/clue/redis-react" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/evenement/evenement" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/laravel/reverb" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/paragonie/sodium_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/pusher/pusher-php-server" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/ratchet/rfc6455" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/react/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/react/dns" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/react/event-loop" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/react/promise" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/react/promise-timer" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/react/socket" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/react/stream" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

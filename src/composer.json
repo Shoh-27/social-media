@@ -8,6 +8,7 @@
         "php": "^8.2",
         "laravel/framework": "^11.0",
         "laravel/horizon": "^5.35",
+        "laravel/reverb": "^1.6",
         "laravel/scout": "^10.20",
         "laravel/tinker": "^2.9",
         "meilisearch/meilisearch-php": "^1.16"

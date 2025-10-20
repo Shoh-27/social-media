@@ -1,0 +1,19 @@
+# .dockerignore faylini yarating yoki yangilang
+cat > .dockerignore << 'EOF'
+.git
+.gitignore
+.env
+.env.example
+node_modules
+vendor
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+bootstrap/cache/*
+.idea
+.vscode
+*.log
+.DS_Store
+Thumbs.db
+EOF

@@ -13,7 +13,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h1 class="text-2xl font-bold">{{ $user->name }}</h1>
-                            <p class="text-gray-600">@{{ $user->username }}</p>
+                            <p class="text-gray-600">{{ $user->username }}</p>
                         </div>
 
                         @if(auth()->id() === $user->id)
