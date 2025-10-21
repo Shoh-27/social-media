@@ -139,24 +139,45 @@
 </html>
 
 @push('scripts')
-    function toggleDarkMode() {
-    const html = document.documentElement;
-    const isDark = html.classList.contains('dark');
-    const newTheme = isDark ? 'light' : 'dark';
+    <script type="module">
+        const userId = {{ auth()->id() }};
 
-    html.classList.toggle('dark', newTheme === 'dark');
+        // Listen for notifications
+        Echo.private(`notifications.${userId}`)
+            .listen('.notification.created', (e) => {
+                // Update badge
+                const badge = document.querySelector('.notification-badge');
+                const currentCount = parseInt(badge.textContent) || 0;
+                badge.textContent = currentCount + 1;
+                badge.classList.remove('hidden');
 
-    fetch('/preferences/theme', {
-    method: 'POST',
-    headers: {
-    'Content-Type': 'application/json',
-    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-    },
-    body: JSON.stringify({ theme: newTheme })
-    });
+                // Show toast notification
+                showNotification(e);
 
-    localStorage.setItem('theme', newTheme);
-    }
+                // Play sound
+                new Audio('/sounds/notification.mp3').play().catch(() => {});
+            });
+
+        function showNotification(data) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 right-4 bg-white shadow-lg rounded-lg p-4 max-w-sm z-50 animate-slide-in';
+            toast.innerHTML = `
+        <div class="flex items-start space-x-3">
+            <img src="${data.sender.avatar}" class="w-10 h-10 rounded-full">
+            <div class="flex-1">
+                <p class="font-semibold">${data.sender.name}</p>
+                <p class="text-sm text-gray-600">${data.message}</p>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()"
+                    class="text-gray-400 hover:text-gray-600">×</button>
+        </div>
+    `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 5000);
+        }
+    </script>
 @endpush
 
 

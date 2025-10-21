@@ -278,4 +278,74 @@
             }
         </script>
     @endpush
+
+    @push('scripts')
+        <script type="module">
+            // Listen for likes on all posts
+            Echo.channel('posts')
+                .listen('.post.liked', (e) => {
+                    const likeCountElement = document.querySelector(`[data-post-id="${e.post_id}"] .likes-count`);
+                    if (likeCountElement) {
+                        likeCountElement.textContent = e.likes_count + ' likes';
+                    }
+                });
+
+            // Listen for comments on specific post
+            @foreach($posts as $post)
+            Echo.channel('post.{{ $post->id }}')
+                .listen('.comment.created', (e) => {
+                    appendComment({{ $post->id }}, e);
+                });
+            @endforeach
+
+            function appendComment(postId, data) {
+                const commentHtml = `
+        <div class="flex items-start space-x-3 mt-3">
+            <img src="${data.user.avatar}"
+                 alt="${data.user.name}"
+                 class="w-8 h-8 rounded-full">
+            <div class="flex-1 bg-gray-100 rounded-lg p-3">
+                <a href="/@${data.user.username}"
+                   class="font-semibold text-sm hover:underline">
+                    ${data.user.name}
+                </a>
+                <p class="text-sm text-gray-800">${data.content}</p>
+                <div class="flex items-center space-x-4 mt-1 text-xs text-gray-500">
+                    <span>${data.created_at}</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+                const commentsContainer = document.querySelector(`[data-post-id="${postId}"] .comments-container`);
+                commentsContainer.insertAdjacentHTML('beforeend', commentHtml);
+            }
+
+            // AJAX Comment submission
+            document.querySelectorAll('.comment-form').forEach(form => {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const postId = form.dataset.postId;
+                    const input = form.querySelector('input[name="content"]');
+                    const content = input.value.trim();
+
+                    if (!content) return;
+
+                    const response = await fetch(`/posts/${postId}/comments`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify({ content })
+                    });
+
+                    if (response.ok) {
+                        input.value = '';
+                    }
+                });
+            });
+        </script>
+    @endpush
 @endsection
