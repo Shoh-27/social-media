@@ -7,6 +7,8 @@ use App\Models\Comment;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Events\CommentCreated;
+use App\Events\NotificationCreated;
 
 class CommentController extends Controller
 {
@@ -24,15 +26,27 @@ class CommentController extends Controller
 
         $post->increment('comments_count');
 
+        // Broadcast event
+        broadcast(new CommentCreated($comment));
+
         // Create notification
         if ($post->user_id !== auth()->id()) {
-            Notification::create([
+            $notification = Notification::create([
                 'user_id' => $post->user_id,
                 'sender_id' => auth()->id(),
                 'type' => 'comment',
                 'notifiable_type' => Post::class,
                 'notifiable_id' => $post->id,
                 'message' => auth()->user()->name . ' commented on your post',
+            ]);
+
+            broadcast(new NotificationCreated($notification));
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'comment' => $comment->load('user'),
+                'success' => true
             ]);
         }
 

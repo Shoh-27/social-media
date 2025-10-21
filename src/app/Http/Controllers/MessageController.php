@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Message;
+use App\Events\MessageSent;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -60,14 +61,13 @@ class MessageController extends Controller
             'message' => $validated['message'],
         ]);
 
-        if ($request->ajax()) {
-            return response()->json([
-                'message' => $message->load('sender'),
-                'success' => true
-            ]);
-        }
+        // Broadcast event
+        broadcast(new MessageSent($message))->toOthers();
 
-        return back();
+        return response()->json([
+            'message' => $message->load('sender'),
+            'success' => true
+        ]);
     }
 
     public function fetch(User $user)
