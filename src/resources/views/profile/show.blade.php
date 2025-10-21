@@ -22,11 +22,20 @@
                                 Edit Profile
                             </a>
                         @else
-                            <button onclick="toggleFollow({{ $user->id }})"
-                                    id="follow-btn-{{ $user->id }}"
-                                    class="px-6 py-2 rounded-lg {{ auth()->user()->isFollowing($user) ? 'bg-gray-200 hover:bg-gray-300' : 'bg-blue-600 text-white hover:bg-blue-700' }}">
-                                {{ auth()->user()->isFollowing($user) ? 'Unfollow' : 'Follow' }}
-                            </button>
+                            <div class="flex items-center space-x-2">
+                                <!-- Follow/Unfollow tugmasi -->
+                                <button onclick="toggleFollow({{ $user->id }})"
+                                        id="follow-btn-{{ $user->id }}"
+                                        class="px-6 py-2 rounded-lg {{ auth()->user()->isFollowing($user) ? 'bg-gray-200 hover:bg-gray-300' : 'bg-blue-600 text-white hover:bg-blue-700' }}">
+                                    {{ auth()->user()->isFollowing($user) ? 'Unfollow' : 'Follow' }}
+                                </button>
+
+                                <!-- 📨 Yangi: Message tugmasi -->
+                                <a href="{{ route('messages.show', $user->id) }}"
+                                   class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                                    Message
+                                </a>
+                            </div>
                         @endif
                     </div>
 
