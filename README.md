@@ -467,6 +467,9 @@ docker-compose exec redis redis-cli ping
 
 ---
 
+<img width="1536" height="643" alt="image" src="https://github.com/user-attachments/assets/f2157d37-7483-4005-a7f6-0cb5b7318f14" />
+
+
 ## ⭐ Star History
 
 Agar loyiha foydali bo'lsa, ⭐ star bering!
