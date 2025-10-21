@@ -1,6 +1,5 @@
 FROM php:8.3-fpm-alpine
 
-# Set working directory
 WORKDIR /var/www
 
 # Install system dependencies
@@ -69,8 +68,6 @@ RUN chown -R laravel:laravel /var/www \
 # Switch to non-root user
 USER laravel
 
-# Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
-# Start PHP-FPM
 CMD ["php-fpm"]
